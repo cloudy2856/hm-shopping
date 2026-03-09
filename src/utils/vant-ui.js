@@ -1,6 +1,11 @@
 import Vue from 'vue'
-import { Icon, Toast, NavBar, Tabbar, TabbarItem, Search, Swipe, SwipeItem, Grid, GridItem, ActionSheet, Rate, Dialog, Checkbox, CheckboxGroup, Tab, Tabs } from 'vant'
+import { Icon, Toast, NavBar, Tabbar, TabbarItem, Search, Swipe, SwipeItem, Grid, GridItem, ActionSheet, Rate, Dialog, Checkbox, CheckboxGroup, Tab, Tabs, AddressList, AddressEdit, Tag, Badge, Button, Image, Uploader, Popup } from 'vant'
 
+Vue.use(Popup)
+Vue.use(Uploader)
+Vue.use(Button)
+Vue.use(Badge)
+Vue.use(AddressEdit)
 Vue.use(Tab)
 Vue.use(Tabs)
 Vue.use(Checkbox)
@@ -18,3 +23,6 @@ Vue.use(Toast)
 Vue.use(NavBar)
 Vue.use(Tabbar)
 Vue.use(TabbarItem)
+Vue.use(AddressList)
+Vue.use(Tag)
+Vue.use(Image)

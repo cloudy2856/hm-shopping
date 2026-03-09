@@ -27,3 +27,8 @@ export const delSelect = (cartIds) => {
     cartIds
   })
 }
+
+// 购物车商品数量
+export const getCartTotal = () => {
+  return request.get('/cart/total')
+}

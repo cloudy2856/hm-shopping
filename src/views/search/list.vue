@@ -17,9 +17,9 @@
 
     <!-- 排序选项按钮 -->
     <div class="sort-btns">
-      <div class="sort-item">综合</div>
-      <div class="sort-item">销量</div>
-      <div class="sort-item">价格 </div>
+      <div class="sort-item" @click="handleSort('all')">综合</div>
+      <div class="sort-item" @click="handleSort('sales')">销量</div>
+      <div class="sort-item" @click="handleSort('price')">价格 <span :class="['arrow', sortPrice === 0 ? 'arrow-up' : 'arrow-down']"></span></div>
     </div>
 
     <div class="goods-list">
@@ -44,16 +44,32 @@ export default {
   data () {
     return {
       page: 1,
-      proList: []
+      proList: [],
+      sortType: 'all',
+      sortPrice: 0
     }
   },
   async created () {
-    const { data: { list } } = await getProList({
-      categoryId: this.$route.query.categoryId,
-      goodsName: this.querySearch,
-      page: this.page
-    })
-    this.proList = list.data
+    this.getProList()
+  },
+  methods: {
+    async getProList () {
+      const { data: { list } } = await getProList({
+        sortType: this.sortType,
+        sortPrice: this.sortPrice,
+        categoryId: this.$route.query.categoryId,
+        goodsName: this.querySearch,
+        page: this.page
+      })
+      this.proList = list.data
+    },
+    handleSort (type) {
+      this.sortType = type
+      if (type === 'price') {
+        this.sortPrice = this.sortPrice === 0 ? 1 : 0
+      }
+      this.getProList()
+    }
   }
 }
 </script>
@@ -78,6 +94,27 @@ export default {
       text-align: center;
       flex: 1;
       font-size: 16px;
+      position: relative;
+
+      .arrow {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 4px;
+        opacity: 0.8;
+      }
+
+      .arrow-up {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 6px solid #333;
+      }
+
+      .arrow-down {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 6px solid #333;
+      }
     }
   }
 }

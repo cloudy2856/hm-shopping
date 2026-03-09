@@ -15,7 +15,11 @@ const Search = () => import('@/views/search')
 const SearchList = () => import('@/views/search/list')
 const ProDetail = () => import('@/views/prodetail')
 const Pay = () => import('@/views/pay')
-const MyOrder = () => import('@/views/myorder')
+const MyOrder = () => import('@/views/myorder/index.vue')
+const Address = () => import('@/views/address/index.vue')
+const AddressEdit = () => import('@/views/address/edit')
+const OrderDetail = () => import('@/views/myorder/detail')
+const Comment = () => import('@/views/prodetail/comment')
 
 Vue.use(VueRouter)
 
@@ -37,7 +41,11 @@ const router = new VueRouter({
     { path: '/searchlist', component: SearchList },
     { path: '/prodetail/:id', component: ProDetail },
     { path: '/pay', component: Pay },
-    { path: '/myorder', component: MyOrder }
+    { path: '/myorder', component: MyOrder },
+    { path: '/address', component: Address },
+    { path: '/address/edit', component: AddressEdit },
+    { path: '/order/detail', component: OrderDetail },
+    { path: '/comment', component: Comment }
   ]
 })
 

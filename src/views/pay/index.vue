@@ -3,7 +3,7 @@
     <van-nav-bar fixed title="订单结算台" left-arrow @click-left="$router.go(-1)" />
 
     <!-- 地址相关 -->
-    <div class="address">
+    <div class="address" @click="$router.push('/address')">
 
       <div class="left-icon">
         <van-icon name="logistics" />
@@ -24,7 +24,7 @@
       </div>
 
       <div class="right-icon">
-        <van-icon name="arrow" />
+        <van-icon name="arrow" @click="$router.push('/address')" />
       </div>
     </div>
 
@@ -95,12 +95,13 @@
 </template>
 
 <script>
-import { getAddressList } from '@/api/address'
+import { getAddressList, getDefaultAddress } from '@/api/address'
 import { checkOrder, submitOrder } from '@/api/order'
 export default {
   name: 'PayIndex',
   data () {
     return {
+      selectedAddress: {},
       addressList: [],
       order: {},
       personal: {},
@@ -108,9 +109,6 @@ export default {
     }
   },
   computed: {
-    selectedAddress () {
-      return this.addressList[0] || {}
-    },
     longAddress () {
       const region = this.selectedAddress.region
       return region.province + region.city + region.region + this.selectedAddress.detail
@@ -133,12 +131,25 @@ export default {
   },
   created () {
     this.getAddressList()
+    this.getSelectedAddress()
     this.getOrderList()
   },
   methods: {
     async getAddressList () {
       const { data: { list } } = await getAddressList()
       this.addressList = list
+    },
+    async getSelectedAddress () {
+      // 确保地址列表已加载
+      if (!this.addressList.length) {
+        await this.getAddressList()
+      }
+
+      const { data: { defaultId } } = await getDefaultAddress()
+      this.chosenAddressId = defaultId
+      this.selectedAddress = this.addressList.find(item => item.address_id === this.chosenAddressId) || {}
+      console.log('默认地址ID:', defaultId)
+      console.log('找到的地址:', this.selectedAddress)
     },
     async getOrderList () {
       // 购物车结算

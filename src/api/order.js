@@ -33,3 +33,38 @@ export const getMyOrderList = (dataType, page) => {
     }
   })
 }
+
+// 订单详情
+export const getOrderDetail = (orderId) => {
+  return request.get('/order/detail', {
+    params: {
+      orderId
+    }
+  })
+}
+
+export const cancelOrder = (orderId) => {
+  return request.post('/order/cancel', {
+    orderId
+  })
+}
+
+// 订单支付
+export const payOrder = (orderId, payType) => {
+  return request.post('/order/pay', {
+    orderId,
+    payType
+  })
+}
+
+// 商品状态数量
+export const getOrderStatus = () => {
+  return request.get('/order/todoCounts')
+}
+
+// 订单确认收货
+export const confirmOrder = (orderId) => {
+  return request.post('/order/receipt', {
+    orderId
+  })
+}

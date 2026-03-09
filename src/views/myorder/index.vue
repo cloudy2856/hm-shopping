@@ -9,7 +9,7 @@
       <van-tab name="comment" title="待评价"></van-tab>
     </van-tabs>
 
-    <OrderListItem v-for="item in list" :key="item.order_id" :item=item></OrderListItem>
+    <OrderListItem v-for="item in list" :key="item.order_id" :item=item @refresh="getOrderList"></OrderListItem>
   </div>
 </template>
 

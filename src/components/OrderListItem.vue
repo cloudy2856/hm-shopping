@@ -1,5 +1,5 @@
 <template>
-  <div class="order-list-item" v-if="item.order_id">
+  <div class="order-list-item" v-if="item.order_id" @click="!showPayType && handleClick">
     <div class="tit">
       <div class="time">{{ item.create_time }}</div>
       <div class="status">
@@ -26,25 +26,66 @@
     </div>
     <div class="actions">
       <div v-if="item.order_status === 10">
-        <span v-if="item.pay_status === 10">立刻付款</span>
-        <span v-else-if="item.delivery_status === 10">申请取消</span>
-        <span v-else-if="item.delivery_status === 20 || item.delivery_status === 30">确认收货</span>
+        <span v-if="item.pay_status === 10" @click.stop="showPayType = true">去支付</span>
+        <span  @click.stop="handleCancel" v-if="item.delivery_status === 10">申请取消</span>
+        <span v-else-if="item.delivery_status === 20 || item.delivery_status === 30" @click.stop="handleConfirm">确认收货</span>
       </div>
       <div v-if="item.order_status === 30">
         <span>评价</span>
       </div>
     </div>
+    <PayMode :visible.sync="showPayType" :orderId="item.order_id" />
   </div>
 </template>
 
 <script>
+import { cancelOrder, confirmOrder } from '@/api/order'
+import PayMode from './PayMode.vue'
 export default {
+  data () {
+    return {
+      showPayType: false
+    }
+  },
   props: {
     item: {
       type: Object,
       default: () => {
         return {}
       }
+    }
+  },
+  components: {
+    PayMode
+  },
+  methods: {
+    handleClick () {
+      this.$router.push({
+        path: '/order/detail',
+        query: {
+          order_id: this.item.order_id
+        }
+      })
+    },
+    async handleCancel () {
+      this.$dialog.confirm({
+        title: '提示',
+        message: '确定取消订单吗？'
+      }).then(async () => {
+        await cancelOrder(this.item.order_id)
+        this.$toast('取消成功')
+        this.$emit('refresh')
+      }).catch(() => {})
+    },
+    async handleConfirm () {
+      this.$dialog.confirm({
+        title: '提示',
+        message: '确定确认收货吗？'
+      }).then(async () => {
+        await confirmOrder(this.item.order_id)
+        this.$toast('确认成功')
+        this.$emit('refresh')
+      }).catch(() => {})
     }
   }
 }

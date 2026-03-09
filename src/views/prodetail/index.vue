@@ -25,10 +25,9 @@
         {{ detail.goods_name }}
       </div>
 
-      <div class="service">
+      <div class="service" @click="handleClick">
         <div class="left-words">
-          <span><van-icon name="passed" />七天无理由退货</span>
-          <span><van-icon name="passed" />48小时发货</span>
+          <span v-for="item in serviceList" :key="item.service_id"><van-icon name="passed" />{{ item.name }}</span>
         </div>
         <div class="right-icon">
           <van-icon name="arrow" />
@@ -40,7 +39,7 @@
     <div class="comment">
       <div class="comment-title">
         <div class="left">商品评价 ({{ total }}条)</div>
-        <div class="right">查看更多 <van-icon name="arrow" /> </div>
+        <div class="right" @click="toComment">查看更多 <van-icon name="arrow" /> </div>
       </div>
       <div class="comment-list">
         <div class="comment-item" v-for="item in commentList" :key="item.comment_id">
@@ -111,14 +110,24 @@
         <div class="btn-none" v-else>该商品已抢完</div>
       </div>
     </van-action-sheet>
+
+    <!-- 服务保障 -->
+    <van-action-sheet v-model="showService">
+      <div class="servicePannel">
+        <div class="service-item" v-for="item in serviceList" :key="item.service_id">
+          <van-icon name="passed" />{{ item.name }}
+          <div class="summary">{{ item.summary }}</div>
+        </div>
+      </div>
+    </van-action-sheet>
   </div>
 </template>
 
 <script>
-import { getProDetail, getProComments } from '@/api/product'
+import { getProDetail, getProComments, getService } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox.vue'
-import { addCart } from '@/api/cart'
+import { addCart, getCartTotal } from '@/api/cart'
 import loginConfirm from '@/mixins/loginConfirm'
 export default {
   name: 'ProDetailIndex',
@@ -137,7 +146,9 @@ export default {
       showPannel: false, // 控制弹层的显示隐藏
       mode: 'cart', // 标记弹层状态
       addCount: 1, // 数字框绑定的数据
-      cartTotal: 0 // 购物车角标
+      cartTotal: 0, // 购物车角标
+      serviceList: [],
+      showService: false
     }
   },
   computed: {
@@ -148,10 +159,17 @@ export default {
   created () {
     this.getDetail()
     this.getComments()
+    this.getService()
+    // 进页面获取购物车商品数量
+    this.getCartTotal()
   },
   methods: {
     onChange (index) {
       this.current = index
+    },
+    async getCartTotal () {
+      const { data } = await getCartTotal()
+      this.cartTotal = data.cartTotal
     },
     async getDetail () {
       const { data: { detail } } = await getProDetail(this.goodsId)
@@ -193,6 +211,21 @@ export default {
           goodsId: this.goodsId,
           goodsSkuId: this.detail.skuList[0].goods_sku_id,
           goodsNum: this.addCount
+        }
+      })
+    },
+    async getService () {
+      const { data: { list } } = await getService(this.goodsId)
+      this.serviceList = list
+    },
+    handleClick () {
+      this.showService = true
+    },
+    toComment () {
+      this.$router.push({
+        path: '/comment',
+        query: {
+          goodsId: this.goodsId
         }
       })
     }
@@ -410,6 +443,30 @@ export default {
     text-align: center;
     background-color: #ee0a24;
     border-radius: 50%;
+  }
+}
+
+.servicePannel {
+  padding: 10px;
+  .service-item {
+    justify-content: space-between;
+    line-height: 40px;
+    margin-top: 10px;
+    font-size: 16px;
+    background-color: #fafafa;
+    padding: 0 10px;
+
+    .van-icon {
+      margin-right: 4px;
+      color: #fa2209;
+    }
+
+    .summary {
+      color: #999;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-top: 5px;
+    }
   }
 }
 </style>
